@@ -13,8 +13,8 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var myTableView: UITableView!
     
-    let apiURL = "https://api.themoviedb.org/3"
-    let apiKey = "0424fa87b82e17923e0bf89b143c6fb2"
+//    let apiURL = "https://api.themoviedb.org/3"
+//    let apiKey = "0424fa87b82e17923e0bf89b143c6fb2"
     let networkHelper = NetworkHelper()
     var search: String = "hugh"
     var searchActors: [Actor]?  {
@@ -26,10 +26,10 @@ class ViewController: UIViewController {
     func searchActorRequest() {
         let searchRequest = "/search/person"
         let myQueryItems = [
-            "api_key": apiKey,
+            "api_key": networkHelper.apiKey,
             "query": search
         ]
-        var urlComponents = URLComponents(string: apiURL + searchRequest)
+        var urlComponents = URLComponents(string: networkHelper.apiURL + searchRequest)
         urlComponents?.queryItems = networkHelper.queryItems(dictionary: myQueryItems)
         print(urlComponents!)
         

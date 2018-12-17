@@ -17,8 +17,8 @@ class ActorDetailsViewController: UIViewController {
     @IBOutlet weak var pictureLabel: UILabel!
     @IBOutlet weak var biographyLabel: UITextView!
     
-    let apiURL = "https://api.themoviedb.org/3"
-    let apiKey = "0424fa87b82e17923e0bf89b143c6fb2"
+//    let apiURL = "https://api.themoviedb.org/3"
+//    let apiKey = "0424fa87b82e17923e0bf89b143c6fb2"
     let networkHelper = NetworkHelper()
 
     var selectedActor: Actor?
@@ -44,9 +44,9 @@ class ActorDetailsViewController: UIViewController {
         }
         let searchRequest = "/person/\(actor.id)"
         let myQueryItems = [
-            "api_key": apiKey
+            "api_key": networkHelper.apiKey
             ]
-        var urlComponents = URLComponents(string: apiURL + searchRequest)
+        var urlComponents = URLComponents(string: networkHelper.apiURL + searchRequest)
         urlComponents?.queryItems = networkHelper.queryItems(dictionary: myQueryItems)
         print(urlComponents!)
         
