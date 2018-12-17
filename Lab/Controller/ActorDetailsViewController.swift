@@ -20,7 +20,7 @@ class ActorDetailsViewController: UIViewController {
 //    let apiURL = "https://api.themoviedb.org/3"
 //    let apiKey = "0424fa87b82e17923e0bf89b143c6fb2"
     let networkHelper = NetworkHelper()
-
+    
     var selectedActor: Actor?
     var fullActor: Actor? {
         didSet {
@@ -31,10 +31,18 @@ class ActorDetailsViewController: UIViewController {
             biographyLabel.text = fullActor?.biography
         }
     }
+    var searchMovies: [Movie]? {
+        didSet {
+            searchMovieDetailRequest()
+        }
+    }
+    var fullMovie: [Movie]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         searchActorDetailsRequest()
+        searchMoviesRequest()
+        
     }
     
     func searchActorDetailsRequest() {
@@ -48,7 +56,6 @@ class ActorDetailsViewController: UIViewController {
             ]
         var urlComponents = URLComponents(string: networkHelper.apiURL + searchRequest)
         urlComponents?.queryItems = networkHelper.queryItems(dictionary: myQueryItems)
-        print(urlComponents!)
         
         let task = URLSession.shared.dataTask(with: urlComponents!.url!) { (data, response, error) in
             guard let dataResponse = data, error == nil else {
@@ -66,4 +73,63 @@ class ActorDetailsViewController: UIViewController {
         }
         task.resume()
     }
+    
+    func searchMoviesRequest() {
+        guard let actor = selectedActor else {
+            print("Não recebi nenhum ator dessa segue")
+            return
+        }
+        let searchRequest = "/person/\(actor.id)/movie_credits"
+        let myQueryItems = [
+            "api_key": networkHelper.apiKey
+        ]
+        var urlComponents = URLComponents(string: networkHelper.apiURL + searchRequest)
+        urlComponents?.queryItems = networkHelper.queryItems(dictionary: myQueryItems)
+        
+        let task = URLSession.shared.dataTask(with: urlComponents!.url!) { (data, response, error) in
+            guard let dataResponse = data, error == nil else {
+                print("error")
+                return
+            }
+            do {
+                let decode = try JSONDecoder().decode(MovieSearchResponse.self, from: dataResponse)
+                DispatchQueue.main.async {
+                    self.searchMovies = decode.cast
+                }
+            } catch let parsinError{
+                print("Error", parsinError)
+            }
+        }
+        task.resume()
+    }
+    
+    func searchMovieDetailRequest() {
+        guard let movies = searchMovies else { return }
+        for movie in movies {
+            let searchRequest = "/movie/\(movie.id)"
+            let myQueryItems = [
+                "api_key": networkHelper.apiKey
+            ]
+            var urlComponents = URLComponents(string: networkHelper.apiURL + searchRequest)
+            urlComponents?.queryItems = networkHelper.queryItems(dictionary: myQueryItems)
+            
+            let task = URLSession.shared.dataTask(with: urlComponents!.url!) { (data, response, error) in
+                guard let dataResponse = data, error == nil else {
+                    print("error")
+                    return
+                }
+                do {
+                    let decode = try JSONDecoder().decode(Movie.self, from: dataResponse)
+                    DispatchQueue.main.async {
+                        self.fullMovie?.append(decode)
+                        print(decode)
+                    }
+                } catch let parsinError{
+                    print("Error", parsinError)
+                }
+            }
+            task.resume()
+        }
+    }
+    
 }

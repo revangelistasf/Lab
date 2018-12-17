@@ -40,7 +40,7 @@ class ViewController: UIViewController {
                     return
             }
             do {
-                let decode = try JSONDecoder().decode(SearchResponse.self, from: dataResponse)
+                let decode = try JSONDecoder().decode(ActorSearchResponse.self, from: dataResponse)
                 DispatchQueue.main.async {
                     guard let results = decode.results else {
                         return

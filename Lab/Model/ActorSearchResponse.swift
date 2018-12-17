@@ -7,6 +7,6 @@
 //
 
 import Foundation
-class SearchResponse: Decodable {
+class ActorSearchResponse: Decodable {
     var results: [Actor]?
 }
